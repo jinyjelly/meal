@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff8ef">
+<title>나의 주간 식단</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;800&display=swap');
+@font-face{font-family:"Kyobo";src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff') format('woff');font-display:swap;}
+*{box-sizing:border-box}
+:root{
+ --paper:#fffaf1; --ink:#4c4743; --muted:#8e827d;
+ --pink:#f6c5cf; --pink2:#ffe5e8; --lav:#e8dcf3;
+ --yellow:#f7e5a9; --mint:#dcebdc; --line:#e8ddd2;
+}
+body{
+ margin:0; color:var(--ink);
+ font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+ background:
+ radial-gradient(circle at 20% 15%,rgba(246,197,207,.13),transparent 23%),
+ radial-gradient(circle at 90% 65%,rgba(232,220,243,.17),transparent 25%),
+ #fbf5eb;
+}
+button,textarea{font:inherit}
+.app{width:min(760px,calc(100% - 12px));margin:6px auto 18px}
+.paper{
+ position:relative;background:var(--paper);border-radius:22px;padding:12px 8px 10px;
+ box-shadow:0 8px 30px rgba(106,84,69,.10);
+ border:1px solid rgba(224,207,193,.65);overflow:hidden
+}
+.paper:before{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+ background-image:linear-gradient(rgba(139,113,94,.08) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(139,113,94,.05) 1px,transparent 1px);
+ background-size:24px 24px
+}
+.content{position:relative;z-index:1}
+.tape{
+ width:92px;height:24px;background:rgba(236,174,184,.72);
+ position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(2deg);
+ border-radius:2px;opacity:.75
+}
+.hero{text-align:center;padding:5px 6px 1px;position:relative}
+.hero h1{margin:0;font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-1px}
+.hero h1:after{content:"";display:block;width:145px;height:8px;margin:-2px auto 0;background:rgba(244,169,185,.45);border-radius:50%;transform:rotate(-1deg)}
+.hero p{font-family:"Gamja Flower",cursive;margin:9px 0 0;color:#897c77;font-size:17px}
+.doodle{position:absolute;font-size:25px;color:#dc7994}
+.d1{left:7%;top:11px;transform:rotate(-12deg)} .d2{right:8%;top:15px;transform:rotate(10deg)}
+.nav{display:flex;align-items:center;gap:7px;margin:9px 4px 5px}
+.nav-title{flex:1;text-align:center;font-size:19px;font-weight:700;line-height:1.05}
+.icon{
+ border:2px solid #dbcfc5;background:#fffdf8;width:36px;height:36px;border-radius:50%;
+ font-size:26px;line-height:1;color:#796c66;box-shadow:2px 3px 0 rgba(224,202,190,.45)
+}
+.this-week{
+ display:block;margin:0 auto 7px;border:0;background:var(--pink2);color:#9b6370;
+ padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;
+ transform:rotate(-.5deg);box-shadow:1px 2px 0 rgba(224,180,188,.35)
+}
+.table-wrap{
+ background:rgba(255,255,255,.68);border:2px solid #dfd2c8;border-radius:15px;
+ overflow:hidden;box-shadow:3px 4px 0 rgba(219,203,191,.25);
+ transform:rotate(-.08deg)
+}
+.grid{display:grid;grid-template-columns:70px repeat(3,minmax(0,1fr))}
+.cell{min-width:0;border-right:1.5px dashed #ded0c6;border-bottom:1.5px dashed #ded0c6}
+.grid>.cell:nth-child(4n){border-right:0}
+.head{
+ padding:8px 2px 7px;text-align:center;font-size:18px;font-weight:800;line-height:1;
+ position:relative
+}
+.day-head{background:#f8f1e8}
+.breakfast.head{background:#fff2c9}.lunch.head{background:#e6f0df}.dinner.head{background:#eee4f6}
+.head span{display:inline-block}
+.head.breakfast span{transform:rotate(-2deg)} .head.lunch span{transform:rotate(1deg)} .head.dinner span{transform:rotate(-1deg)}
+.day{
+ min-height:67px;padding:4px 2px;text-align:center;background:rgba(255,250,243,.82);
+ display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0
+}
+.day strong{font-size:17px;line-height:1.05;font-weight:800;letter-spacing:-.6px}
+.day span{font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;font-size:16px;font-weight:800;color:#5f5752;line-height:1.05;margin-top:5px;display:block}
+.day.today{background:#ffe7ec;position:relative}
+.day.today:after{content:"♥";color:#dc7890;font-size:12px;position:absolute;right:4px;top:4px}
+.meal{padding:2px;min-height:67px;display:flex;align-items:center;justify-content:center}
+.meal.breakfast{background:rgba(255,248,222,.45)}
+.meal.lunch{background:rgba(238,247,233,.45)}
+.meal.dinner{background:rgba(246,239,250,.50)}
+.meal textarea{
+ width:100%;height:63px;border:0;resize:none;outline:none;background:transparent;
+ padding:4px 3px;font-family:"Kyobo","Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+ font-size:20px;font-weight:400;line-height:1.25;letter-spacing:-.2px;color:#3f3a37;text-align:center;overflow:hidden;
+}
+.meal textarea::placeholder{color:#c1b4ad;font-size:17px}
+.meal textarea:focus{background:rgba(255,255,255,.72);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(230,177,190,.35)}
+.footer-note{text-align:center;margin:5px 0 0;color:#94857e;font-size:14px}
+.stickers{display:flex;justify-content:center;gap:13px;margin-top:4px;font-size:16px;color:#d88298}
+.stickers span:nth-child(2){color:#c3a1d8}.stickers span:nth-child(3){color:#d9b650}
+.toast{
+ position:fixed;left:50%;bottom:17px;transform:translateX(-50%) translateY(8px);
+ background:#725f58;color:#fff8f3;padding:8px 16px;border-radius:18px;
+ font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:.2s
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:430px){
+ .stickers,.footer-note{display:none}
+ .app{width:calc(100% - 4px);margin-top:3px}
+ .paper{padding:10px 4px 7px;border-radius:18px}
+ .hero h1{font-size:28px}.hero p{font-size:16px}
+ .grid{grid-template-columns:60px repeat(3,minmax(0,1fr))}
+ .head{font-size:17px;font-weight:800;padding:7px 1px 6px}
+ .day{min-height:64px;padding:3px 1px}
+ .day strong{font-size:16px;font-weight:800}.day span{font-size:15px;font-weight:800}
+ .meal{padding:1px;min-height:64px}
+ .meal textarea{height:62px;font-family:"Kyobo","Noto Sans KR",sans-serif;font-size:19px;font-weight:400;padding:3px 1px}
+ .nav-title{font-size:18px}.doodle{font-size:21px}
+}
+
+/* 모든 표 칸: 가로 + 세로 정중앙 */
+.grid > *{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+.day{
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+.day strong,.day span{
+  width:100%;
+  text-align:center !important;
+}
+.meal{
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+.meal textarea{
+  text-align:center !important;
+  margin:auto !important;
+}
+
+
+/* 메뉴 입력 글자 자체의 세로 중앙 보정 */
+.meal textarea{
+  display:block !important;
+  height:62px !important;
+  min-height:62px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  text-align:center !important;
+  margin:0 auto !important;
+  border:0 !important;
+  resize:none !important;
+  vertical-align:middle !important;
+}
+
+
+/* 요일은 메뉴와 같은 교보손글씨 */
+.day strong{
+  font-family:"Kyobo","Noto Sans KR","Apple SD Gothic Neo",sans-serif !important;
+  font-weight:400 !important;
+}
+
+
+/* 전체 화면 글씨체 통일 */
+html,body,button,textarea,input,
+.paper,.hero,.hero h1,.week-title,.range,
+.nav button,.today-btn,
+.grid,.grid > *,.head,
+.day,.day strong,.day span,
+.meal,.meal textarea,
+.toast,.footer-note,.sticker,.stickers{
+  font-family:"Kyobo","Noto Sans KR","Apple SD Gothic Neo",sans-serif !important;
+}
+
+/* 같은 글씨체 안에서 크기/굵기로만 정보 구분 */
+.hero h1{font-weight:700 !important;}
+.head{font-weight:700 !important;}
+.day strong{font-weight:700 !important;}
+.day span{font-weight:700 !important;}
+.nav button,.today-btn{font-weight:700 !important;}
+.meal textarea{font-weight:400 !important;}
+
+</style>
+</head>
+<body>
+<main class="app">
+<section class="paper">
+<div class="tape"></div>
+<div class="content">
+<header class="hero">
+<span class="doodle d1">♡</span><span class="doodle d2">♡</span>
+<h1>나의 주간 식단</h1>
+
+</header>
+
+<div class="nav">
+<button class="icon" id="prev" aria-label="이전 주">‹</button>
+<div class="nav-title" id="title"></div>
+<button class="icon" id="next" aria-label="다음 주">›</button>
+</div>
+<button class="this-week" id="now">♡ 이번 주</button>
+
+<section class="table-wrap"><div class="grid" id="grid"></div></section>
+
+<div class="stickers"><span>♡</span><span>✿</span><span>☆</span><span>♡</span></div>
+<p class="footer-note">메뉴를 톡 눌러 적으면 자동으로 저장돼요</p>
+</div>
+</section>
+</main>
+<div class="toast" id="toast">♡ 저장했어요</div>
+
+<script>
+const TYPES=[["breakfast","☀ 아침"],["lunch","♧ 점심"],["dinner","☾ 저녁"]];
+const DAYS=["일","월","화","수","목","금","토"];
+const grid=document.getElementById("grid"),title=document.getElementById("title"),toast=document.getElementById("toast");
+let anchor=new Date();
+
+function fmt(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function monday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()),n=x.getDay();x.setDate(x.getDate()+(n===0?-6:1-n));return x}
+
+function centerMeal(t){
+  const cs = getComputedStyle(t);
+  const lineHeight = parseFloat(cs.lineHeight) || 25;
+  const h = t.clientHeight || 62;
+
+  // Count visual lines: explicit newlines + wrapped lines measured with a hidden mirror.
+  const mirror = document.createElement("div");
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.pointerEvents = "none";
+  mirror.style.whiteSpace = "pre-wrap";
+  mirror.style.wordBreak = "break-word";
+  mirror.style.overflowWrap = "break-word";
+  mirror.style.width = t.clientWidth + "px";
+  mirror.style.font = cs.font;
+  mirror.style.letterSpacing = cs.letterSpacing;
+  mirror.style.lineHeight = cs.lineHeight;
+  mirror.style.padding = "0";
+  mirror.style.border = "0";
+  mirror.textContent = t.value || " ";
+  document.body.appendChild(mirror);
+  const textHeight = Math.max(lineHeight, mirror.getBoundingClientRect().height);
+  mirror.remove();
+
+  const pad = Math.max(0, (h - textHeight) / 2);
+  t.style.boxSizing = "border-box";
+  t.style.paddingTop = pad + "px";
+  t.style.paddingBottom = pad + "px";
+}
+
+function load(ds){try{return JSON.parse(localStorage.getItem("meal-plan-"+ds)||"{}")}catch{return{}}}
+function esc(s){const e=document.createElement("div");e.textContent=s;return e.innerHTML}
+function render(){
+ const start=monday(anchor),end=new Date(start);end.setDate(end.getDate()+6);
+ title.textContent=`${start.getFullYear()}년 ${start.getMonth()+1}월 ${start.getDate()}일  ~  ${end.getMonth()+1}월 ${end.getDate()}일`;
+ grid.innerHTML=`<div class="cell head day-head"><span>날짜</span></div>${TYPES.map(([id,label])=>`<div class="cell head ${id}"><span>${label}</span></div>`).join("")}`;
+ const today=fmt(new Date());
+ for(let i=0;i<7;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);
+  const ds=fmt(d),saved=load(ds);
+  grid.insertAdjacentHTML("beforeend",
+   `<div class="cell day ${ds===today?"today":""}"><strong>${DAYS[d.getDay()]}요일</strong><span>${d.getMonth()+1}.${d.getDate()}${ds===today?"<br>오늘":""}</span></div>`+
+   TYPES.map(([id])=>`<div class="cell meal ${id}"><textarea data-date="${ds}" data-type="${id}" placeholder="메뉴">${esc(saved[id]||"")}</textarea></div>`).join("")
+  );
+ }
+ grid.querySelectorAll("textarea").forEach(centerMeal);
+}
+grid.addEventListener("input",e=>{
+ if(!e.target.matches("textarea"))return;
+ centerMeal(e.target);
+ const ds=e.target.dataset.date,type=e.target.dataset.type,obj=load(ds);
+ obj[type]=e.target.value;localStorage.setItem("meal-plan-"+ds,JSON.stringify(obj));
+ toast.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>toast.classList.remove("show"),750);
+});
+document.getElementById("prev").onclick=()=>{anchor.setDate(anchor.getDate()-7);render()};
+document.getElementById("next").onclick=()=>{anchor.setDate(anchor.getDate()+7);render()};
+document.getElementById("now").onclick=()=>{anchor=new Date();render()};
+render();
+
+window.addEventListener("load",()=>setTimeout(()=>document.querySelectorAll(".meal textarea").forEach(centerMeal),80));
+window.addEventListener("resize",()=>document.querySelectorAll(".meal textarea").forEach(centerMeal));
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>document.querySelectorAll(".meal textarea").forEach(centerMeal));
+}
+
+</script>
+</body>
+</html>
